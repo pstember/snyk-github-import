@@ -1,0 +1,62 @@
+{
+  "name": "snyk-github-import",
+  "version": "0.0.0",
+  "author": "Philippe Stemberger (philippe.stemberger@snyk.io)",
+  "bin": {
+    "snyk-github-import": "./bin/run"
+  },
+  "bugs": "https://github.com/pstember/snyk-github-import/issues",
+  "dependencies": {
+    "@oclif/command": "^1.6.0",
+    "@oclif/config": "^1.15.1",
+    "@oclif/errors": "^1.2.2",
+    "@oclif/parser": "^3.8.4",
+    "@oclif/plugin-help": "^2.2.3",
+    "@oclif/plugin-not-found": "^1.2.3",
+    "@octokit/rest": "^17.9.0",
+    "@snyk/configstore": "^3.2.0-rc1",
+    "@types/node-emoji": "^1.8.1",
+    "moment": "^2.25.3",
+    "node-emoji": "^1.10.0",
+    "request-promise-native": "^1.0.8",
+    "snyk-config": "^3.1.0",
+    "tslib": "^1.11.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.22.2",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^10.17.21",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.1.0",
+    "jest": "^25.5.4",
+    "nock": "^12.0.3",
+    "ts-jest": "^25.4.0",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.2"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib"
+  ],
+  "homepage": "https://github.com/pstember/snyk-github-import",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "bin": "snyk-github-import"
+  },
+  "repository": "pstember/snyk-github-import",
+  "scripts": {
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}

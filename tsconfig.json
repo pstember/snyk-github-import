@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "lib",
+    "pretty": true,
+    "target": "es2018",
+    "lib": [
+      "es2018"
+    ],
+    "module": "commonjs",
+    "sourceMap": true,
+    "strict": true,
+    "declaration": true,
+    "importHelpers": true,
+    "noImplicitAny": false, // Needed to compile tap and ansi-escapes
+    "rootDir": "src",
+    "incremental": true,
+    "noImplicitReturns": true,
+  },
+  "include": [
+    "./src/**/*",
+  ]
+}
