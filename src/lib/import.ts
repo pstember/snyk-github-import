@@ -1,5 +1,8 @@
 import { Octokit } from '@octokit/rest';
 import request = require('request-promise-native');
+import * as csvParse from 'csv-parse';
+import fs = require('fs');
+import path = require('path');
 
 export async function getRepos(githubUrl, githubToken, since, githubOrg) {
     const github = new Octokit({
@@ -21,7 +24,7 @@ export async function getRepos(githubUrl, githubToken, since, githubOrg) {
         repos = repos.concat(response.data);
         if (since.isAfter(repos[repos.length-1].updated_at)){
             break; // when too old repo are found
-        }
+}
     }
 
     repos = repos.filter(repo => since.isBefore(repo.updated_at));
@@ -35,6 +38,8 @@ export async function getRepos(githubUrl, githubToken, since, githubOrg) {
         name: repo.name,
         branch: repo.default_branch,
       };
+
+      console.log(target)
 
       const { headers } = await request({
         method: 'post',
@@ -54,4 +59,37 @@ export async function getRepos(githubUrl, githubToken, since, githubOrg) {
     }));
 
     return results;
+  }
+
+  export function getReposFromFile(filePath: string){
+
+    let repos: any[] = [];
+
+    const myParser:csvParse.Parser = csvParse({delimiter: ',', trim: true, from_line: 2});
+
+    fs.createReadStream(filePath)
+    .pipe(myParser)
+    .on('data', (data) => {
+      // console.log(data)
+      repos.push(
+        {
+          owner: {
+            login: data[1],
+          },
+          name: String(data[0]).split('/')[1],
+          default_branch: 'master',
+        });
+    })
+    .on('end', () => {
+      console.log(repos);
+      // [
+      //   { NAME: 'Daffy Duck', AGE: '24' },
+      //   { NAME: 'Bugs Bunny', AGE: '22' }
+      // ]
+    });
+
+
+
+    return repos;
+
   }

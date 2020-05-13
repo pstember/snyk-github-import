@@ -1,16 +1,20 @@
 import {Command, flags} from '@oclif/command'
 import { OutputFlags, Input } from '@oclif/parser';
 import { Config, loadConfig } from './lib/config';
+import { MissingParamsError } from './lib/errors';
 
-import { getRepos, importRepos } from './lib/import';
+import { getRepos, importRepos, getReposFromFile } from './lib/import';
 
-import fs = require('fs');
-import path = require('path');
 import moment = require('moment');
 import chalk from 'chalk';
 
 class SnykGithubImport extends Command {
   static description = 'describe the command here';
+
+  static examples = [
+    '$ snyk-github-import -o <org_token> -i <integration_token> -u https://hostname/api/v3 -g <ghe_token>',
+    '$ snyk-github-import -o <org_token> -i <integration_token> -f ./repoList.csv',
+  ];
 
   static defaults = {
     apiBase: 'https://snyk.io/api/v1',
@@ -92,21 +96,30 @@ class SnykGithubImport extends Command {
     const { flags } = this.parse(this.constructor as Input<typeof SnykGithubImport.flags>);
     this.parsedFlags = flags;
 
-    const snykToken = this.parsedFlags.snykToken ?? SnykGithubImport.userConfig.token;
-
-    let since = this.parsedFlags.since;
-    if (since) {
-      since = moment(since);
-    } else {
-      since = moment().subtract(this.parsedFlags.days, 'days').startOf('day');
+    // at least one type of ignore needs to be specified
+    if ( !this.parsedFlags.githubToken && !this.parsedFlags.input ){
+      throw new MissingParamsError([SnykGithubImport.flags.githubToken.name, SnykGithubImport.flags.input.name]);
     }
 
-    this.log(chalk.grey(`Importing repos modified since ${since.format()}`));
+    const snykToken = this.parsedFlags.snykToken ?? SnykGithubImport.userConfig.token;
 
+    let repos;
 
-    const repos = await getRepos(this.parsedFlags.githubUrl, this.parsedFlags.githubToken, since, this.parsedFlags.githubOrg);
-
-    this.log(chalk.grey(`Found ${repos.length} repo${repos.length > 1 ? 's' : ''} to import`));
+    if (this.parsedFlags.githubToken){
+      let since = this.parsedFlags.since;
+      if (since) {
+        since = moment(since);
+      } else {
+        since = moment().subtract(this.parsedFlags.days, 'days').startOf('day');
+      }
+  
+      this.log(chalk.grey(`Importing repos modified since ${since.format()}`));
+      repos = await getRepos(this.parsedFlags.githubUrl, this.parsedFlags.githubToken, since, this.parsedFlags.githubOrg);
+      this.log(chalk.grey(`Found ${repos.length} repo${repos.length > 1 ? 's' : ''} to import`));
+    } else {
+      repos = getReposFromFile(this.parsedFlags.input);
+    }
+    
 
     const results = await importRepos(
       repos,
@@ -116,7 +129,7 @@ class SnykGithubImport extends Command {
       this.parsedFlags.integrationId);
 
     results.map((item: any) => {
-      this.log('Importing from ' + chalk.green(`${item.target.owner}/${item.target.name}:${item.target.branch}`) + ` @ ${item.location}`);
+      this.log('Importing from ' + chalk.green(`${item.target.owner}/${item.target.name}:${item.target.branch}`) + `  @ ${item.location}`);
   });
 
   }

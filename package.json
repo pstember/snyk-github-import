@@ -16,6 +16,7 @@
     "@octokit/rest": "^17.9.0",
     "@snyk/configstore": "^3.2.0-rc1",
     "@types/node-emoji": "^1.8.1",
+    "csv-parse": "^4.9.1",
     "moment": "^2.25.3",
     "node-emoji": "^1.10.0",
     "request-promise-native": "^1.0.8",
@@ -53,8 +54,8 @@
   },
   "repository": "pstember/snyk-github-import",
   "scripts": {
-    "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev readme",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "echo NO TESTS",
     "version": "oclif-dev readme && git add README.md"
   },
