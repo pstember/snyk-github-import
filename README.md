@@ -18,7 +18,7 @@ USAGE
 OPTIONS
   -a, --snykApi=snykApi              [default: https://snyk.io/api/v1] Snyk api (e.g. https://snyk.io/api/v1
   -d, --days=days                    [default: 1] e.g. 1
-  -f, --input=input                  List of repo to import
+  -f, --input=input                  List of repo to import in a SCV format
   -g, --githubToken=githubToken      GitHub Token
   -h, --githubOrg=githubOrg          a specific org to import from
   -h, --help                         show CLI help
